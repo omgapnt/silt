@@ -1,0 +1,14 @@
+node_modules/
+.node_modules.lock
+.tanstack/
+.vercel/
+.output/
+dist/
+dev.log
+.env
+.env.*
+.grok/
+AGENTS.md
+startup.sh
+agent/docs/
+screenshots/*.json
