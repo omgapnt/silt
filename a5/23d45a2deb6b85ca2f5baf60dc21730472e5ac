@@ -1,0 +1,31 @@
+.gitignore
+  s_4cb7d7edbee850::t_5466adaf4af8fa 1-14
+README.md
+  s_aa0f78a988f790::t_71abd8893cdf9e 1-188
+agent/Start-Silt.ps1
+  s_aa0f78a988f790::t_819414d643a7f2 1-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a523d45a2deb6b85ca2f5baf60dc21730472e5ac",
+  "prompts": {},
+  "sessions": {
+    "s_4cb7d7edbee850": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adda3d17-0025-4d20-a7c0-f9a5a172b846",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    },
+    "s_aa0f78a988f790": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36d5a893-5150-49d0-a9c5-42418d7026cb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    }
+  }
+}
