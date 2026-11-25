@@ -1,0 +1,29 @@
+agent/Start-Silt.ps1
+  s_aa0f78a988f790::t_9d6b4ed968b7a8 1-222
+agent/docs/handoffs/6783e79b-78a6-4d88-b32d-b90eb4b2ec81.md
+  s_4cb7d7edbee850::t_69c9caaeb7a8b9 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "55895c1ed5797959d47a8ca5d5827b808a3f4067",
+  "prompts": {},
+  "sessions": {
+    "s_4cb7d7edbee850": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adda3d17-0025-4d20-a7c0-f9a5a172b846",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    },
+    "s_aa0f78a988f790": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36d5a893-5150-49d0-a9c5-42418d7026cb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    }
+  }
+}
