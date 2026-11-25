@@ -1,0 +1,19 @@
+README.md
+  s_aa0f78a988f790::t_9ec0232c639778 1-4,7-15,17-21,27,29-62,92-95,101-106,112,151,180,182-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5171ff955f992f071afc5904468d43153688014b",
+  "prompts": {},
+  "sessions": {
+    "s_aa0f78a988f790": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36d5a893-5150-49d0-a9c5-42418d7026cb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    }
+  }
+}
