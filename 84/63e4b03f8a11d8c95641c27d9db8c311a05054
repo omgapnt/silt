@@ -1,0 +1,14 @@
+README.md
+  h_460b2b83676802 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8463e4b03f8a11d8c95641c27d9db8c311a05054",
+  "prompts": {},
+  "humans": {
+    "h_460b2b83676802": {
+      "author": "omgapnt <xs9569@gmail.com>"
+    }
+  }
+}
