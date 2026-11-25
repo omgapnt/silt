@@ -9,6 +9,7 @@ import tls from "node:tls";
 import zlib from "node:zlib";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import forge from "node-forge";
 import {
   decodeBody,
   extractExchange,
@@ -174,14 +175,20 @@ async function integration() {
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "silt-"));
   const upstreamKey = path.join(dataDir, "up.key");
   const upstreamCert = path.join(dataDir, "up.crt");
-  await new Promise((resolve, reject) => {
-    const child = spawn(
-      "openssl",
-      ["req", "-x509", "-newkey", "rsa:2048", "-keyout", upstreamKey, "-out", upstreamCert, "-days", "1", "-nodes", "-subj", "/CN=127.0.0.1"],
-      { stdio: "ignore" },
-    );
-    child.on("exit", (code) => (code === 0 ? resolve() : reject(new Error("openssl " + code))));
-  });
+  {
+    const keys = forge.pki.rsa.generateKeyPair(2048);
+    const cert = forge.pki.createCertificate();
+    cert.publicKey = keys.publicKey;
+    cert.serialNumber = "01";
+    cert.validity.notBefore = new Date(Date.now() - 60_000);
+    cert.validity.notAfter = new Date(Date.now() + 86_400_000);
+    const attrs = [{ name: "commonName", value: "127.0.0.1" }];
+    cert.setSubject(attrs);
+    cert.setIssuer(attrs);
+    cert.sign(keys.privateKey, forge.md.sha256.create());
+    fs.writeFileSync(upstreamKey, forge.pki.privateKeyToPem(keys.privateKey));
+    fs.writeFileSync(upstreamCert, forge.pki.certificateToPem(cert));
+  }
 
   const secret = "sk-SUPERSECRETTOKENVALUE1234567890";
   const upstream = https.createServer(
@@ -292,6 +299,23 @@ async function integration() {
         .on("error", reject);
     });
     assert.ok(health.aiCaptures >= 1);
+    const pidMeta = JSON.parse(fs.readFileSync(path.join(dataDir, "silt.pid"), "utf8"));
+    assert.equal(typeof pidMeta.pid, "number");
+    assert.equal(typeof pidMeta.startedAtMs, "number");
+    assert.equal(pidMeta.execPath, process.execPath);
+    assert.match(pidMeta.scriptPath, /silt-agent\.mjs$/);
+
+    const exported = await new Promise((resolve, reject) => {
+      http
+        .get("http://127.0.0.1:" + uiPort + "/api/export", (res) => {
+          let b = "";
+          res.on("data", (c) => (b += c));
+          res.on("end", () => resolve(b));
+        })
+        .on("error", reject);
+    });
+    assert.match(exported, /recorded-ok/);
+    assert.equal(exported.includes(secret), false);
     console.log("integration ok", { captures: health.aiCaptures, other: health.otherConnections });
   } finally {
     agent.kill("SIGTERM");

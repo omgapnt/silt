@@ -1647,7 +1647,7 @@ function dashboardHtml() {
     <p id="direct" class="warn"></p>
   </div>
   <div style="display:flex;gap:8px">
-    <a class="btn" href="/api/captures?download=1&all=1">Export</a>
+    <a class="btn" href="/api/export">Export</a>
     <button class="ghost" id="clear" type="button">Clear tape</button>
   </div>
 </header>
@@ -2259,6 +2259,22 @@ function main() {
       );
       return;
     }
+    if (url.pathname === "/api/export") {
+      res.writeHead(200, {
+        "content-type": "application/x-ndjson",
+        "content-disposition": "attachment; filename=silt-captures.jsonl",
+      });
+      if (!fs.existsSync(captureFile)) {
+        res.end("");
+        return;
+      }
+      const stream = fs.createReadStream(captureFile);
+      stream.on("error", () => {
+        if (!res.writableEnded) res.end();
+      });
+      stream.pipe(res);
+      return;
+    }
     if (url.pathname === "/api/captures") {
       const rows = readCaptures(captureFile, 300, url.searchParams.get("q") || "", url.searchParams.get("all") !== "1");
       if (url.searchParams.get("download")) {
@@ -2297,7 +2313,13 @@ function main() {
   });
 
   const pidFile = path.join(dataDir, "silt.pid");
-  fs.writeFileSync(pidFile, String(process.pid));
+  const pidMeta = {
+    pid: process.pid,
+    startedAtMs: Math.round(Date.now() - process.uptime() * 1000),
+    execPath: process.execPath,
+    scriptPath: fileURLToPath(import.meta.url),
+  };
+  fs.writeFileSync(pidFile, JSON.stringify(pidMeta));
   const shutdown = () => {
     try {
       fs.rmSync(pidFile, { force: true });

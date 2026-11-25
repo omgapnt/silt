@@ -21,15 +21,24 @@ public static class SiltWinInet {
 
 $pidFile = Join-Path $Data "silt.pid"
 if (Test-Path $pidFile) {
-  $procId = Get-Content $pidFile -ErrorAction SilentlyContinue
-  if ($procId) {
-    Stop-Process -Id ([int]$procId) -Force -ErrorAction SilentlyContinue
+  $raw = Get-Content $pidFile -Raw -ErrorAction SilentlyContinue
+  $meta = $null
+  try { $meta = $raw | ConvertFrom-Json } catch { $meta = $null }
+  if ($meta -and $meta.pid -and $meta.startedAtMs -and $meta.execPath -and $meta.scriptPath) {
+    $targetPid = [int]$meta.pid
+    $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $targetPid" -ErrorAction SilentlyContinue
+    if ($proc -and $proc.ExecutablePath -and $proc.CommandLine -and $proc.CreationDate) {
+      $sameExec = [string]::Equals($proc.ExecutablePath, [string]$meta.execPath, [System.StringComparison]::OrdinalIgnoreCase)
+      $hasScript = $proc.CommandLine.IndexOf([string]$meta.scriptPath, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+      $createdMs = ([DateTimeOffset]$proc.CreationDate).ToUnixTimeMilliseconds()
+      $driftMs = [Math]::Abs($createdMs - [int64]$meta.startedAtMs)
+      if ($sameExec -and $hasScript -and $driftMs -le 15000) {
+        Stop-Process -Id $targetPid -Force -ErrorAction SilentlyContinue
+      }
+    }
   }
   Remove-Item $pidFile -Force -ErrorAction SilentlyContinue
 }
-Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" | Where-Object {
-  $_.CommandLine -like "*silt-agent.mjs*"
-} | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 
 $backupPath = Join-Path $Data "proxy-backup.json"
 if (Test-Path $backupPath) {

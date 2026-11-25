@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm --prefix agent ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Run agent checks and self-test
+        run: |
+          node agent/silt-check.mjs
+          node agent/self-test.mjs
+
+      - name: Verify packaged Windows zip matches agent/
+        run: node scripts/verify-windows-zip.mjs
