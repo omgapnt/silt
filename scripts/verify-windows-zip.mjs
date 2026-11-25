@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Verify that `public/silt-windows.zip` matches `agent/` byte-for-byte.
+ * Verify that the packaged text files match `agent/` across Git checkout styles.
  */
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -35,9 +35,9 @@ try {
   }
 
   for (const rel of FILES) {
-    const expected = readFileSync(join(AGENT_DIR, rel));
-    const actual = readFileSync(join(stage, "silt-windows", rel));
-    assert.equal(actual.equals(expected), true, `Mismatch in silt-windows.zip: ${rel}`);
+    const expected = readFileSync(join(AGENT_DIR, rel), "utf8").replaceAll("\r\n", "\n");
+    const actual = readFileSync(join(stage, "silt-windows", rel), "utf8").replaceAll("\r\n", "\n");
+    assert.equal(actual === expected, true, `Mismatch in silt-windows.zip: ${rel}`);
   }
   console.log(`Verified ${FILES.length} files in public/silt-windows.zip match agent/`);
 } finally {
