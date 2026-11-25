@@ -1,0 +1,23 @@
+agent/Stop-Silt.ps1
+  s_aa0f78a988f790::t_27cd1b06a4f3f7 24-38
+agent/self-test.mjs
+  s_aa0f78a988f790::t_ee8f43356270ab 12,178-191,302-318
+agent/silt-agent.mjs
+  s_aa0f78a988f790::t_697a128a9d5efc 1650,2262-2277,2316-2322
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "534f39680708390db9263a5e87795063da3e8e41",
+  "prompts": {},
+  "sessions": {
+    "s_aa0f78a988f790": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "36d5a893-5150-49d0-a9c5-42418d7026cb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "omgapnt <xs9569@gmail.com>"
+    }
+  }
+}
